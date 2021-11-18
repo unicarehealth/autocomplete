@@ -150,13 +150,8 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
      * Gets shadow root containing the element (where applicable).
      */
     function getShadowRoot(el: HTMLElement) : ShadowRoot | null {
-        let traceEl: HTMLElement | ParentNode = el;
-        while ((traceEl as HTMLElement).parentNode && (traceEl = (traceEl as HTMLElement).parentNode!)) {
-            if (traceEl instanceof ShadowRoot) {
-                return traceEl;
-            }
-        }
-        return null;
+        const rootNode = el.getRootNode();
+        return (rootNode instanceof ShadowRoot) ? rootNode : null;
     }
 
     /**

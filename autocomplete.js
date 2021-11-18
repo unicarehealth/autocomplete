@@ -43,13 +43,8 @@
        * Gets shadow root containing the element (where applicable).
        */
       function getShadowRoot(el) {
-          var traceEl = el;
-          while (traceEl.parentNode && (traceEl = traceEl.parentNode)) {
-              if (traceEl instanceof ShadowRoot) {
-                  return traceEl;
-              }
-          }
-          return null;
+          var rootNode = el.getRootNode();
+          return (rootNode instanceof ShadowRoot) ? rootNode : null;
       }
       /**
        * Detach the container from DOM
