@@ -8,10 +8,6 @@ export interface AutocompleteItem {
 }
 export interface AutocompleteSettings<T extends AutocompleteItem> {
     /**
-     * Allows operation within a web component.
-     */
-    shadowRoot?: ShadowRoot;
-    /**
      * Autocomplete will be attached to this element.
      */
     input: HTMLInputElement;

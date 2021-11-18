@@ -15,12 +15,6 @@ export interface AutocompleteItem {
 }
 
 export interface AutocompleteSettings<T extends AutocompleteItem> {
-
-    /**
-     * Allows operation within a web component.
-     */
-    shadowRoot?: ShadowRoot;
-
     /**
      * Autocomplete will be attached to this element.
      */
@@ -116,7 +110,6 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
     // just an alias to minimize JS file size
     const doc = document;
 
-    const shadowRoot: null | ShadowRoot = settings.shadowRoot ?? null;
     const container: HTMLDivElement = settings.container || doc.createElement("div");
     const containerStyle = container.style;
     const userAgent = navigator.userAgent;
@@ -146,10 +139,25 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
 
     const input: HTMLInputElement = settings.input;
 
+    const shadowRoot: null | ShadowRoot = getShadowRoot(input);
+
     container.className = "autocomplete " + (settings.className || "");
 
     // IOS implementation for fixed positioning has many bugs, so we will use absolute positioning
     containerStyle.position = "absolute";
+
+    /**
+     * Gets shadow root containing the element (where applicable).
+     */
+    function getShadowRoot(el: HTMLElement) : ShadowRoot | null {
+        let traceEl: HTMLElement | ParentNode = el;
+        while ((traceEl as HTMLElement).parentNode && (traceEl = (traceEl as HTMLElement).parentNode!)) {
+            if (traceEl instanceof ShadowRoot) {
+                return traceEl;
+            }
+        }
+        return null;
+    }
 
     /**
      * Detach the container from DOM

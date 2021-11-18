@@ -10,10 +10,8 @@
    * MIT License
    */
   function autocomplete(settings) {
-      var _a;
       // just an alias to minimize JS file size
       var doc = document;
-      var shadowRoot = (_a = settings.shadowRoot) !== null && _a !== void 0 ? _a : null;
       var container = settings.container || doc.createElement("div");
       var containerStyle = container.style;
       var userAgent = navigator.userAgent;
@@ -37,9 +35,22 @@
           throw new Error("input undefined");
       }
       var input = settings.input;
+      var shadowRoot = getShadowRoot(input);
       container.className = "autocomplete " + (settings.className || "");
       // IOS implementation for fixed positioning has many bugs, so we will use absolute positioning
       containerStyle.position = "absolute";
+      /**
+       * Gets shadow root containing the element (where applicable).
+       */
+      function getShadowRoot(el) {
+          var traceEl = el;
+          while (traceEl.parentNode && (traceEl = traceEl.parentNode)) {
+              if (traceEl instanceof ShadowRoot) {
+                  return traceEl;
+              }
+          }
+          return null;
+      }
       /**
        * Detach the container from DOM
        */
