@@ -15,6 +15,12 @@ export interface AutocompleteItem {
 }
 
 export interface AutocompleteSettings<T extends AutocompleteItem> {
+
+    /**
+     * Allows operation within a web component.
+     */
+    shadowRoot?: ShadowRoot;
+
     /**
      * Autocomplete will be attached to this element.
      */
@@ -110,6 +116,7 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
     // just an alias to minimize JS file size
     const doc = document;
 
+    const shadowRoot: null | ShadowRoot = settings.shadowRoot ?? null;
     const container: HTMLDivElement = settings.container || doc.createElement("div");
     const containerStyle = container.style;
     const userAgent = navigator.userAgent;
@@ -117,10 +124,10 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
     const debounceWaitMs = settings.debounceWaitMs || 0;
     const preventSubmit = settings.preventSubmit || false;
     const disableAutoSelect = settings.disableAutoSelect || false;
-    
+
     // 'keyup' event will not be fired on Mobile Firefox, so we have to use 'input' event instead
     const keyUpEventName = mobileFirefox ? "input" : "keyup";
-    
+
     let items: T[] = [];
     let inputValue = "";
     let minLen = 2;
@@ -168,7 +175,7 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
      */
     function attach(): void {
         if (!container.parentNode) {
-            doc.body.appendChild(container);
+            (shadowRoot ?? doc.body).appendChild(container);
         }
     }
 
@@ -185,7 +192,7 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
     function clear(): void {
         // prevent the update call if there are pending AJAX requests
         keypressCounter++;
-        
+
         items = [];
         inputValue = "";
         selected = undefined;
@@ -214,19 +221,19 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
             const scrollLeft = window.pageXOffset || docEl.scrollLeft;
 
             inputRect = input.getBoundingClientRect();
-        
+
             const top = inputRect.top + input.offsetHeight + scrollTop - clientTop;
             const left = inputRect.left + scrollLeft - clientLeft;
-    
+
             containerStyle.top = top + "px";
             containerStyle.left = left + "px";
-    
+
             maxHeight = window.innerHeight - (inputRect.top + input.offsetHeight);
-    
+
             if (maxHeight < 0) {
                 maxHeight = 0;
             }
-    
+
             containerStyle.top = top + "px";
             containerStyle.bottom = "";
             containerStyle.left = left + "px";
@@ -246,7 +253,7 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
      * Redraw the autocomplete div element with suggestions
      */
     function update(): void {
-        
+
         // delete all children from autocomplete DOM container
         while (container.firstChild) {
             container.removeChild(container.firstChild);
@@ -364,7 +371,7 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
         const elements = container.getElementsByClassName("selected");
         if (elements.length > 0) {
             let element = elements[0] as HTMLDivElement;
-            
+
             // make group visible
             const previous = element.previousElementSibling as HTMLDivElement;
             if (previous && previous.className.indexOf("group") !== -1 && !previous.previousElementSibling) {
@@ -453,7 +460,7 @@ export default function autocomplete<T extends AutocompleteItem>(settings: Autoc
                 settings.onSelect(selected, input);
                 clear();
             }
-    
+
             if (preventSubmit) {
                 ev.preventDefault();
             }

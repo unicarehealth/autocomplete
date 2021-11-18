@@ -10,8 +10,10 @@
    * MIT License
    */
   function autocomplete(settings) {
+      var _a;
       // just an alias to minimize JS file size
       var doc = document;
+      var shadowRoot = (_a = settings.shadowRoot) !== null && _a !== void 0 ? _a : null;
       var container = settings.container || doc.createElement("div");
       var containerStyle = container.style;
       var userAgent = navigator.userAgent;
@@ -60,7 +62,7 @@
        */
       function attach() {
           if (!container.parentNode) {
-              doc.body.appendChild(container);
+              (shadowRoot !== null && shadowRoot !== void 0 ? shadowRoot : doc.body).appendChild(container);
           }
       }
       /**
